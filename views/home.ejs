@@ -1,0 +1,86 @@
+<%- include("partials/header") %>
+
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <!-- Texto principal -->
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h1 class="display-5 fw-bold mb-3">
+                    Bienvenido a <span class="text-primary">Mi Restaurante</span>
+                </h1>
+
+                <% if (!currentUser) { %>
+                    <p class="lead mb-4">
+                        Crea una cuenta, guarda tus direcciones y haz pedidos en pocos clics.
+                    </p>
+
+                    <a href="/login" class="btn btn-primary btn-lg me-2 mb-2">
+                        Iniciar sesión
+                    </a>
+                    <a href="/register" class="btn btn-outline-primary btn-lg mb-2">
+                        Registrarse
+                    </a>
+                    <% } else { %>
+                        <p class="lead mb-4">
+                            Hola, <strong>
+                                <%= currentUser.name %>
+                            </strong> 👋<br />
+                            Ve al menú para ver los productos disponibles y arma tu pedido.
+                        </p>
+
+                        <a href="/menu" class="btn btn-danger btn-lg me-2 mb-2">
+                            Ver menú
+                        </a>
+                        <a href="/carrito" class="btn btn-outline-secondary btn-lg mb-2">
+                            Ver carrito
+                        </a>
+                        <% } %>
+            </div>
+
+            <!-- Imagen / ilustración -->
+            <div class="col-md-6 text-center">
+                <!-- Puedes cambiar esta imagen por algo tuyo después -->
+                <img src="/imagenes/Restaurante.jpg" class="img-fluid rounded shadow-sm"
+                    alt="Ilustración del restaurante" />
+            </div>
+        </div>
+
+        <hr class="my-5" />
+
+        <!-- Tarjetas de características -->
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Pide en minutos</h5>
+                        <p class="card-text">
+                            Revisa el menú, agrega productos al carrito y confirma tu pedido rápido y fácil.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Direcciones guardadas</h5>
+                        <p class="card-text">
+                            Registra tus direcciones favoritas y reutilízalas en tus próximos pedidos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Historial de pedidos</h5>
+                        <p class="card-text">
+                            Consulta tus pedidos anteriores desde tu perfil y lleva control de tus compras.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include("partials/footer") %>

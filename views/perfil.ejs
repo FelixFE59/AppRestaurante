@@ -1,0 +1,92 @@
+<%- include("partials/header") %>
+
+    <div class="container py-3">
+        <h2 class="mb-3">Mi perfil</h2>
+
+        <!-- DATOS DEL USUARIO -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <%= user.name %>
+                </h5>
+
+                <p class="mb-1">
+                    <strong>Usuario:</strong>
+                    <%= user.username %>
+                </p>
+
+                <p class="mb-1">
+                    <strong>Correo:</strong>
+                    <%= user.email %>
+                </p>
+
+                <% if (user.phone) { %>
+                    <p class="mb-0">
+                        <strong>Teléfono:</strong>
+                        <%= user.phone %>
+                    </p>
+                    <% } %>
+            </div>
+        </div>
+
+        <!-- RESUMEN DE DIRECCIONES -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0">Direcciones registradas</h5>
+            <span class="badge text-bg-secondary">
+                <%= direcciones.length %>
+            </span>
+        </div>
+
+        <a href="/direcciones" class="btn btn-sm btn-outline-primary mb-3">
+            Gestionar direcciones
+        </a>
+
+        <hr />
+
+        <!-- HISTORIAL DE PEDIDOS -->
+        <h5>Mis pedidos</h5>
+
+        <% if (pedidos.length===0) { %>
+            <p class="text-muted">Todavía no has realizado pedidos.</p>
+            <% } else { %>
+                <div class="list-group">
+                    <% pedidos.forEach(p=> { %>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>
+                                        Pedido #<%= p._id.toString().slice(-6) %>
+                                    </strong><br />
+
+                                    <small>
+                                        Fecha:
+                                        <%= p.createdAt.toLocaleString('es-CR') %>
+                                    </small><br />
+
+                                    <% if (p.address) { %>
+                                        <small>
+                                            Dirección:
+                                            <%= p.address.label %> – <%= p.address.line1 %>
+                                        </small><br />
+                                        <% } %>
+
+                                            <small>
+                                                Estado: <%= p.status %>
+                                            </small>
+                                </div>
+
+                                <div class="text-end">
+                                    <span class="fw-bold d-block">
+                                        ₡ <%= p.total.toLocaleString('es-CR') %>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Si quieres, aquí luego podemos agregar un botón "ver detalle" -->
+                        </div>
+                        <% }) %>
+                </div>
+                <% } %>
+    </div>
+
+    <%- include("partials/footer") %>

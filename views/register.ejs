@@ -1,0 +1,46 @@
+<%- include("partials/header") %>
+
+    <section class="auth">
+        <h2>Crear cuenta</h2>
+
+        <% if (typeof error !=="undefined" ) { %>
+            <p class="error">
+                <%= error %>
+            </p>
+            <% } %>
+
+                <form action="/register" method="POST" class="form">
+                    <label>
+                        Nombre completo
+                        <input type="text" name="name" required />
+                    </label>
+
+                    <label>
+                        Usuario
+                        <input type="text" name="username" required />
+                    </label>
+
+                    <label>
+                        Correo
+                        <input type="email" name="email" required />
+                    </label>
+
+                    <label>
+                        Teléfono
+                        <input type="text" name="phone" />
+                    </label>
+
+                    <label>
+                        Contraseña
+                        <input type="password" name="password" required />
+                    </label>
+
+                    <button type="submit" class="btn">Registrarse</button>
+                </form>
+
+                <p>
+                    <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
+                </p>
+    </section>
+
+    <%- include("partials/footer") %>

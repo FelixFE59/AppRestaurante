@@ -1,0 +1,101 @@
+<%- include("partials/header") %>
+
+    <div class="container py-3">
+        <h2 class="mb-3">Mis direcciones</h2>
+
+        <!-- Formulario para agregar nueva dirección -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Agregar nueva dirección</h5>
+
+                <form action="/direcciones" method="POST" class="row g-2">
+                    <div class="col-12">
+                        <label class="form-label">Etiqueta (Casa, Trabajo, etc.)</label>
+                        <input type="text" name="label" class="form-control" required />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Dirección principal</label>
+                        <input type="text" name="line1" class="form-control" required />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Detalle adicional</label>
+                        <input type="text" name="line2" class="form-control" />
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label" required>Ciudad / Cantón</label>
+                        <input type="text" name="city" class="form-control" />
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label" required>Provincia</label>
+                        <input type="text" name="province" class="form-control" />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Referencia</label>
+                        <textarea name="reference" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Guardar dirección
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de direcciones ya registradas -->
+        <h5 class="mb-2">Direcciones guardadas</h5>
+
+        <% if (direcciones.length===0) { %>
+            <p class="text-muted">Aún no has registrado ninguna dirección.</p>
+            <% } %>
+
+                <div class="list-group">
+                    <% direcciones.forEach(d=> { %>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>
+                                        <%= d.label %>
+                                    </strong><br />
+                                    <span>
+                                        <%= d.line1 %>
+                                    </span><br />
+                                    <% if (d.line2) { %>
+                                        <span>
+                                            <%= d.line2 %>
+                                        </span><br />
+                                        <% } %>
+                                            <% if (d.city || d.province) { %>
+                                                <small class="text-muted">
+                                                    <%= d.city || '' %>
+                                                        <%= d.province ? (' - ' + d.province) : '' %>
+              </small><br />
+            <% } %>
+            <% if (d.reference) { %>
+              <small class="text-muted">
+                Ref: <%= d.reference %>
+              </small>
+            <% } %>
+          </div>
+
+          <form
+            action="/direcciones/<%= d._id %>/eliminar"
+            method="POST"
+            onsubmit="return confirm(' ¿Eliminar esta dirección?');">
+                                                            <button class="btn btn-sm btn-outline-danger">
+                                                                Eliminar
+                                                            </button>
+                                                            </form>
+                                </div>
+                            </div>
+                            <% }) %>
+                        </div>
+                </div>
+
+                <%- include("partials/footer") %>

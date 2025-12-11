@@ -1,0 +1,45 @@
+<%- include("partials/header") %>
+
+    <div class="container py-3">
+        <h2 class="mb-3">Mi carrito</h2>
+
+        <% if (carrito.length===0) { %>
+            <p class="text-muted">Tu carrito está vacío.</p>
+            <a href="/menu" class="btn btn-primary">Ir al menú</a>
+            <% } else { %>
+                <div class="list-group mb-3">
+                    <% carrito.forEach(item=> { %>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>
+                                    <%= item.name %>
+                                </strong><br />
+                                <small>Cantidad: <%= item.qty %></small><br />
+                                <small>Precio unitario: ₡ <%= item.price.toLocaleString('es-CR') %></small>
+                            </div>
+                            <div class="text-end">
+                                <p class="mb-1 fw-bold">
+                                    ₡ <%= (item.price * item.qty).toLocaleString('es-CR') %>
+                                </p>
+                                <form action="/carrito/eliminar/<%= item.productId %>" method="POST">
+                                    <button class="btn btn-sm btn-outline-danger">Quitar</button>
+                                </form>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+
+                <h4>Total: ₡ <%= total.toLocaleString('es-CR') %>
+                </h4>
+
+                <form action="/carrito/vaciar" method="POST" class="mt-2">
+                    <button class="btn btn-outline-secondary">Vaciar carrito</button>
+                </form>
+
+                <a href="/pedido/confirmar" class="btn btn-success mt-3">
+                    Realizar pedido
+                </a>
+                <% } %>
+    </div>
+
+    <%- include("partials/footer") %>

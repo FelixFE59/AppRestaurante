@@ -1,0 +1,51 @@
+<%- include("partials/header") %>
+
+    <div class="container py-3">
+        <h2 class="mb-3">Confirmar pedido</h2>
+
+        <h5>Resumen del carrito</h5>
+        <ul class="list-group mb-3">
+            <% carrito.forEach(item=> { %>
+                <li class="list-group-item d-flex justify-content-between">
+                    <div>
+                        <strong>
+                            <%= item.name %>
+                        </strong><br />
+                        <small>Cantidad: <%= item.qty %></small>
+                    </div>
+                    <span>
+                        ₡ <%= (item.price * item.qty).toLocaleString('es-CR') %>
+                    </span>
+                </li>
+                <% }) %>
+        </ul>
+
+        <h4>Total: ₡ <%= total.toLocaleString('es-CR') %>
+        </h4>
+
+        <hr />
+
+        <h5>Selecciona una dirección de entrega</h5>
+
+        <form action="/pedido/confirmar" method="POST">
+            <div class="mb-3">
+                <% direcciones.forEach(d=> { %>
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="radio" name="addressId" id="addr-<%= d._id %>"
+                            value="<%= d._id %>" required />
+                        <label class="form-check-label" for="addr-<%= d._id %>">
+                            <strong>
+                                <%= d.label %>
+                            </strong> - <%= d.line1 %>
+                        </label>
+                    </div>
+                    <% }) %>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">
+                Confirmar pedido
+            </button>
+        </form>
+    </div>
+
+    <%- include("partials/footer") %>

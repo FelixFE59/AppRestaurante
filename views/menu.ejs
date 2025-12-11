@@ -1,0 +1,67 @@
+<%- include("partials/header") %>
+
+    <div class="container py-3">
+        <h2 class="mb-3">Menú</h2>
+
+        <!-- Filtro de categorías -->
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="/menu" class="btn btn-sm <%= !selectedCategory ? 'btn-primary' : 'btn-outline-primary' %>">
+                Todas
+            </a>
+
+            <% categories.forEach(cat=> { %>
+                <a href="/menu?category=<%= cat._id %>"
+                    class="btn btn-sm <%= selectedCategory == cat._id.toString() ? 'btn-primary' : 'btn-outline-primary' %>">
+                    <%= cat.icon || '' %>
+                        <%= cat.name %>
+                </a>
+                <% }) %>
+        </div>
+
+        <!-- Lista de productos -->
+        <div class="row g-3">
+            <% if (products.length===0) { %>
+                <p>No hay productos en esta categoría.</p>
+                <% } %>
+
+                    <% products.forEach(p=> { %>
+                        <div class="col-12 col-md-6">
+                            <div class="card h-100">
+                                <% if (p.imageUrl) { %>
+                                    <img src="<%= p.imageUrl %>" class="card-img-top" alt="<%= p.name %>"
+                                        onerror="this.style.display='none';" />
+                                    <% } %>
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <%= p.name %>
+                                            </h5>
+                                            <p class="card-text text-muted mb-1">
+                                                <small>
+                                                    <%= p.category?.name %>
+                                                </small>
+                                            </p>
+                                            <% if (p.description) { %>
+                                                <p class="card-text">
+                                                    <%= p.description %>
+                                                </p>
+                                                <% } %>
+                                                    <p class="fw-bold">
+                                                        ₡ <%= p.price.toLocaleString('es-CR') %>
+                                                    </p>
+                                                    <form action="/carrito/agregar/<%= p._id %>" method="POST"
+                                                        class="mt-2">
+                                                        <input type="hidden" name="qty" value="1" />
+                                                        <button type="submit" class="btn btn-sm btn-success w-100">
+                                                            Agregar al carrito
+                                                        </button>
+                                                    </form>
+
+                                                    <!-- Más adelante aquí podemos poner botón "Agregar al carrito" -->
+                                        </div>
+                            </div>
+                        </div>
+                        <% }) %>
+        </div>
+    </div>
+
+    <%- include("partials/footer") %>
