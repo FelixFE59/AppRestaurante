@@ -6,6 +6,8 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const mongoose = require("mongoose");
 
+require("dotenv").config();
+
 const app = express();
 
 //Encritar contraseña
@@ -24,9 +26,17 @@ app.use(express.urlencoded({ extended: true })); // leer formularios (req.body)
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+//no entiendo
+const PORT = process.env.PORT || 3000;
+
+const MONGO_URI =
+  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/app_restaurante_dev";
+
+const SESSION_SECRET = process.env.SESSION_SECRET || "dev-secret-123";
+
 app.use(
   session({
-    secret: "MySecretKey",
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
   })
@@ -40,7 +50,7 @@ app.use((req, res, next) => {
 });
 
 mongoose
-  .connect("mongodb://localhost:27017/app_restaurante")
+  .connect(MONGO_URI)
   .then(() => console.log(chalk.green("✅ MongoDB conectado")))
   .catch((err) => console.error("❌ Error MongoDB:", err));
 
@@ -403,10 +413,6 @@ app.get("/perfil", requireLogin, async (req, res) => {
 });
 
 // 8. Servidor escuchando
-app.listen(3000, () => {
-  console.log(chalk.bgHex("#ff69b4").white.bold(" EXPRESS SERVER STARTED "));
-  console.log(
-    chalk.green("Running at: ") + chalk.cyan("http://localhost:3000")
-  );
-  console.log(chalk.gray("Press Ctrl+C to stop the server."));
+app.listen(PORT, () => {
+  console.log("Servidor corriendo en puerto", PORT);
 });
