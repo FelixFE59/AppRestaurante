@@ -42,7 +42,7 @@ app.use((req, res, next) => {
   if (!req.session.cart) {
     req.session.cart = [];
   }
-  res.locals.cart = req.session.cart; // por si algún día quieres mostrar cantidad en el header
+  res.locals.cart = req.session.cart;
   next();
 });
 
@@ -56,16 +56,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// 7. Ruta de inicio (home)
 app.get("/", (req, res) => {
-  res.render("home"); // views/home.ejs
+  res.render("home");
 });
 
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
-// Procesar registro
 app.post("/register", async (req, res) => {
   const { name, username, email, phone, password } = req.body;
 
@@ -81,12 +79,10 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Página de login
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
-// Procesar login
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -99,14 +95,13 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    // Guardamos info básica en la sesión
     req.session.user = {
       id: user._id,
       username: user.username,
       name: user.name,
     };
 
-    res.redirect("/menu"); // más adelante crearemos /menu
+    res.redirect("/menu");
   } catch (err) {
     console.error("Error en login:", err);
     res.status(500).render("login", {
@@ -115,7 +110,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Logout
 app.post("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
@@ -131,23 +125,19 @@ function requireLogin(req, res, next) {
 
 app.get("/seed", async (req, res) => {
   try {
-    // Limpia colecciones para esta prueba
     await Category.deleteMany({});
     await Product.deleteMany({});
 
-    // Crea categorías
     const categorias = await Category.insertMany([
       { name: "Hamburguesas", icon: "🍔", order: 1 },
       { name: "Bebidas", icon: "🥤", order: 2 },
       { name: "Postres", icon: "🍰", order: 3 },
     ]);
 
-    // Mapa rápido por nombre
     const catHamb = categorias.find((c) => c.name === "Hamburguesas");
     const catBeb = categorias.find((c) => c.name === "Bebidas");
     const catPost = categorias.find((c) => c.name === "Postres");
 
-    // Crea productos
     await Product.insertMany([
       {
         name: "Hamburguesa Clásica",
@@ -287,7 +277,6 @@ app.post("/direcciones/:id/eliminar", requireLogin, async (req, res) => {
     const userId = req.session.user.id;
     const addressId = req.params.id;
 
-    // solo borra si la dirección es del usuario actual
     await Address.deleteOne({ _id: addressId, user: userId });
 
     res.redirect("/direcciones");
@@ -336,7 +325,6 @@ app.post("/carrito/agregar/:id", requireLogin, async (req, res) => {
   }
 });
 
-// Ver carrito
 app.get("/carrito", requireLogin, (req, res) => {
   const carrito = req.session.cart || [];
   let total = 0;
@@ -347,7 +335,6 @@ app.get("/carrito", requireLogin, (req, res) => {
   res.render("carrito", { carrito, total });
 });
 
-// Eliminar un producto del carrito
 app.post("/carrito/eliminar/:id", requireLogin, (req, res) => {
   const productId = req.params.id;
   req.session.cart = (req.session.cart || []).filter(
@@ -356,7 +343,6 @@ app.post("/carrito/eliminar/:id", requireLogin, (req, res) => {
   res.redirect("/carrito");
 });
 
-// Vaciar carrito
 app.post("/carrito/vaciar", requireLogin, (req, res) => {
   req.session.cart = [];
   res.redirect("/carrito");
@@ -374,7 +360,6 @@ app.get("/pedido/confirmar", requireLogin, async (req, res) => {
   });
 
   if (direcciones.length === 0) {
-    // Sin direcciones no se puede hacer pedido
     return res.redirect("/direcciones");
   }
 
@@ -396,7 +381,6 @@ app.post("/pedido/confirmar", requireLogin, async (req, res) => {
     const userId = req.session.user.id;
     const { addressId } = req.body;
 
-    // Verificar que la dirección pertenece al usuario
     const address = await Address.findOne({ _id: addressId, user: userId });
     if (!address) {
       return res.status(400).send("Dirección inválida");
@@ -420,10 +404,9 @@ app.post("/pedido/confirmar", requireLogin, async (req, res) => {
       status: "pendiente",
     });
 
-    // Vaciar carrito
     req.session.cart = [];
 
-    res.redirect("/perfil"); // luego lo verás en el perfil
+    res.redirect("/perfil");
   } catch (err) {
     console.error("Error creando pedido:", err);
     res.status(500).send("Error creando pedido");
@@ -434,13 +417,10 @@ app.get("/perfil", requireLogin, async (req, res) => {
   try {
     const userId = req.session.user.id;
 
-    // Traer datos completos del usuario
     const user = await User.findById(userId);
 
-    // Traer direcciones del usuario
     const direcciones = await Address.find({ user: userId });
 
-    // Traer pedidos del usuario, con la dirección poblada
     const pedidos = await Order.find({ user: userId })
       .populate("address")
       .sort({ createdAt: -1 });
@@ -456,7 +436,6 @@ app.get("/contacto", (req, res) => {
   res.render("contacto");
 });
 
-// 8. Servidor escuchando
 app.listen(PORT, () => {
   console.log(chalk.bgHex("#ff69b4").white.bold(" EXPRESS SERVER STARTED "));
   console.log(
