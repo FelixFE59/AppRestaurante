@@ -27,37 +27,30 @@
                     <% products.forEach(p=> { %>
                         <div class="col-12 col-md-6">
                             <div class="card h-100">
-                                <% if (p.imageUrl) { %>
-                                    <img src="<%= p.imageUrl %>" class="card-img-top" alt="<%= p.name %>"
-                                        onerror="this.style.display='none';" />
-                                    <% } %>
-                                        <div class="card-body">
-                                            <h5 class="card-title">
-                                                <%= p.name %>
-                                            </h5>
-                                            <p class="card-text text-muted mb-1">
-                                                <small>
-                                                    <%= p.category?.name %>
-                                                </small>
-                                            </p>
-                                            <% if (p.description) { %>
-                                                <p class="card-text">
-                                                    <%= p.description %>
-                                                </p>
-                                                <% } %>
-                                                    <p class="fw-bold">
-                                                        ₡ <%= p.price.toLocaleString('es-CR') %>
-                                                    </p>
-                                                    <form action="/carrito/agregar/<%= p._id %>" method="POST"
-                                                        class="mt-2">
-                                                        <input type="hidden" name="qty" value="1" />
-                                                        <button type="submit" class="btn btn-sm btn-success w-100">
-                                                            Agregar al carrito
-                                                        </button>
-                                                    </form>
+                                <a href="/producto/<%= p._id %>" class="text-decoration-none text-dark">
+                                    <img src="<%= p.imageUrl %>" class="card-img-top" alt="<%= p.name %>">
+                                </a>
+                                <div class="card-body">
+                                    <a href="/producto/<%= p._id %>" class="text-decoration-none text-dark">
+                                        <h5 class="card-title">
+                                            <%= p.name %>
+                                        </h5>
+                                    </a>
 
-                                                    <!-- Más adelante aquí podemos poner botón "Agregar al carrito" -->
-                                        </div>
+                                    <p class="card-text text-truncate">
+                                        <%= p.description %>
+                                    </p>
+                                    <p class="fw-bold">₡ <%= p.price %>
+                                    </p>
+                                    <form action="/carrito/agregar/<%= p._id %>" method="POST" class="mt-2">
+                                        <input type="hidden" name="qty" value="1" />
+                                        <button type="submit" class="btn btn-sm btn-success w-100">
+                                            Agregar al carrito
+                                        </button>
+                                    </form>
+
+                                    <!-- Más adelante aquí podemos poner botón "Agregar al carrito" -->
+                                </div>
                             </div>
                         </div>
                         <% }) %>

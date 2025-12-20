@@ -1,0 +1,121 @@
+<%- include("partials/header") %>
+
+    <div class="container py-5">
+        <div class="row">
+            <!-- Imagen -->
+            <div class="col-md-5 mb-4">
+                <img src="<%= product.imageUrl %>" alt="<%= product.name %>" class="img-fluid rounded shadow-sm">
+            </div>
+
+            <!-- Info del producto -->
+            <div class="col-md-7">
+                <h1 class="mb-3">
+                    <%= product.name %>
+                </h1>
+
+                <% if (product.category) { %>
+                    <p class="text-muted mb-1">
+                        Categoría: <strong>
+                            <%= product.category.name %>
+                        </strong>
+                    </p>
+                    <% } %>
+
+                        <p class="fs-5 mb-3">
+                            <%= product.description %>
+                        </p>
+
+                        <p class="fs-4 fw-bold text-success mb-1">
+                            Precio unitario: ₡
+                            <span id="precio-unitario" data-base-price="<%= product.price %>">
+                                <%= product.price %>
+                            </span>
+                        </p>
+
+                        <p class="text-muted mb-3">
+                            Total (cantidad x unitario): ₡
+                            <span id="precio-total">
+                                <%= product.price %>
+                            </span>
+                        </p>
+                        <!-- Formulario para cantidad + extras -->
+                        <form action="/carrito/agregar/<%= product._id %>" method="POST"
+                            class="border rounded p-3 bg-light">
+                            <div class="mb-3">
+                                <div class="mb-3">
+                                    <label for="qty" class="form-label">Cantidad</label>
+                                    <input type="number" id="qty" name="qty" min="1" value="1" class="form-control"
+                                        required>
+                                </div>
+                                <label class="form-label">Extras</label>
+
+                                <% if (product.extras && product.extras.length> 0) { %>
+                                    <% product.extras.forEach((extra)=> { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input extra-check" type="checkbox" name="extras"
+                                                value="<%= extra.code %>" data-extra-price="<%= extra.price %>"
+                                                id="extra-<%= extra.code %>">
+
+                                            <label class="form-check-label" for="extra-<%= extra.code %>">
+                                                <%= extra.label %>
+                                                    <% if (extra.price && extra.price> 0) { %>
+                                                        (+₡<%= extra.price %>)
+                                                            <% } %>
+                                            </label>
+                                        </div>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <p class="text-muted mb-0">Este producto no tiene extras configurados.
+                                                </p>
+                                                <% } %>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                Agregar al carrito
+                            </button>
+
+                            <a href="/menu" class="btn btn-outline-secondary ms-2">
+                                Volver al menú
+                            </a>
+                        </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const qtyInput = document.getElementById("qty");
+            const unitSpan = document.getElementById("precio-unitario");
+            const totalSpan = document.getElementById("precio-total");
+            const extraCheckboxes = document.querySelectorAll(".extra-check");
+
+            const basePrice = parseInt(unitSpan.dataset.basePrice || "0", 10);
+
+            function recalcularPrecio() {
+                let extrasTotal = 0;
+
+                extraCheckboxes.forEach((cb) => {
+                    if (cb.checked) {
+                        const extraPrice = parseInt(cb.dataset.extraPrice || "0", 10);
+                        extrasTotal += extraPrice;
+                    }
+                });
+
+                const qty = parseInt(qtyInput.value || "1", 10);
+                const unitarioConExtras = basePrice + extrasTotal;
+                const total = unitarioConExtras * qty;
+
+                unitSpan.textContent = unitarioConExtras;
+                totalSpan.textContent = total;
+            }
+
+            // Eventos: cuando cambia cantidad o los extras
+            qtyInput.addEventListener("input", recalcularPrecio);
+            extraCheckboxes.forEach((cb) =>
+                cb.addEventListener("change", recalcularPrecio)
+            );
+
+            // Calcular al cargar la página
+            recalcularPrecio();
+        });
+    </script>
+
+    <%- include("partials/footer") %>

@@ -6,8 +6,6 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const mongoose = require("mongoose");
 
-require("dotenv").config();
-
 const app = express();
 
 //Encritar contraseña
@@ -26,7 +24,6 @@ app.use(express.urlencoded({ extended: true })); // leer formularios (req.body)
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-//no entiendo
 const PORT = process.env.PORT || 3000;
 
 const MONGO_URI =
@@ -36,7 +33,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET || "dev-secret-123";
 
 app.use(
   session({
-    secret: SESSION_SECRET,
+    secret: "MySecretKey",
     resave: false,
     saveUninitialized: false,
   })
@@ -51,8 +48,8 @@ app.use((req, res, next) => {
 
 mongoose
   .connect(MONGO_URI)
-  .then(() => console.log(chalk.green("✅ MongoDB conectado")))
-  .catch((err) => console.error("❌ Error MongoDB:", err));
+  .then(() => console.log("MongoDB conectado"))
+  .catch((err) => console.error("Error conectando MongoDB:", err));
 
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
@@ -158,6 +155,11 @@ app.get("/seed", async (req, res) => {
         price: 3500,
         imageUrl: "/imagenes/Hamburguesa clasica.webp",
         category: catHamb._id,
+        extras: [
+          { code: "queso_extra", label: "Queso extra", price: 500 },
+          { code: "tocino", label: "Tocino", price: 700 },
+          { code: "salsa_bbq", label: "Salsa BBQ extra", price: 300 },
+        ],
       },
       {
         name: "Hamburguesa Doble Queso",
@@ -165,6 +167,10 @@ app.get("/seed", async (req, res) => {
         price: 4500,
         imageUrl: "/imagenes/Hamburguesa doble queso.avif",
         category: catHamb._id,
+        extras: [
+          { code: "tocino", label: "Tocino", price: 700 },
+          { code: "pan_artesanal", label: "Pan artesanal", price: 600 },
+        ],
       },
       {
         name: "Gaseosa 350ml",
@@ -172,13 +178,25 @@ app.get("/seed", async (req, res) => {
         price: 1200,
         imageUrl: "/imagenes/gaseosas.webp",
         category: catBeb._id,
+        extras: [
+          { code: "hielo_extra", label: "Hielo extra", price: 0 },
+          { code: "sin_azucar", label: "Versión sin azúcar", price: 0 },
+        ],
       },
       {
         name: "Helado de vainilla",
         description: "Con sirope de chocolate.",
         price: 1800,
-        imageUrl: "/imagenes/Helado vainilla.webp",
+        imageUrl: "/imagenes/helado_vainilla.webp",
         category: catPost._id,
+        extras: [
+          {
+            code: "sirope_chocolate",
+            label: "Sirope de chocolate extra",
+            price: 300,
+          },
+          { code: "nueces", label: "Nueces", price: 400 },
+        ],
       },
     ]);
 
@@ -209,6 +227,22 @@ app.get("/menu", requireLogin, async (req, res) => {
   } catch (err) {
     console.error("Error cargando menú:", err);
     res.status(500).send("Error cargando menú");
+  }
+});
+
+app.get("/producto/:id", requireLogin, async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findById(productId).populate("category");
+
+    if (!product) {
+      return res.status(404).send("Producto no encontrado");
+    }
+
+    res.render("producto_detalle", { product });
+  } catch (err) {
+    console.error("Error cargando detalle del producto", err);
+    res.status(500).send("Error cargando el detalle del producto");
   }
 });
 
@@ -268,6 +302,11 @@ app.post("/carrito/agregar/:id", requireLogin, async (req, res) => {
     const productId = req.params.id;
     const qty = parseInt(req.body.qty || "1", 10);
 
+    let extras = req.body.extras || [];
+    if (!Array.isArray(extras)) {
+      extras = extras ? [extras] : [];
+    }
+
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).send("Producto no encontrado");
@@ -286,6 +325,7 @@ app.post("/carrito/agregar/:id", requireLogin, async (req, res) => {
         name: product.name,
         price: product.price,
         qty,
+        extras,
       });
     }
 
@@ -412,7 +452,15 @@ app.get("/perfil", requireLogin, async (req, res) => {
   }
 });
 
+app.get("/contacto", (req, res) => {
+  res.render("contacto");
+});
+
 // 8. Servidor escuchando
 app.listen(PORT, () => {
-  console.log("Servidor corriendo en puerto", PORT);
+  console.log(chalk.bgHex("#ff69b4").white.bold(" EXPRESS SERVER STARTED "));
+  console.log(
+    chalk.green("Running at: ") + chalk.cyan("http://localhost:3000")
+  );
+  console.log(chalk.gray("Press Ctrl+C to stop the server."));
 });
