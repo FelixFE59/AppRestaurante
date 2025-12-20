@@ -8,7 +8,6 @@ const mongoose = require("mongoose");
 
 const app = express();
 
-//Encritar contraseña
 const User = require("./models/User");
 const bcrypt = require("bcrypt");
 const Category = require("./models/Category");
@@ -20,7 +19,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(express.urlencoded({ extended: true })); // leer formularios (req.body)
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
